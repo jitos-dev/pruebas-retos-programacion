@@ -11,35 +11,96 @@ package prueba_php_futbol;
 * ejemplo de lo que se debería mostrar por pantalla en un ejemplo con 8 equipos.
 */
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class Calendario {
     public static void main(String[] args) {
+        List<Team> teams = getTeams();
+        List<FootballJourney> calendar = generateCalendar(teams);
+        printFootballJourneys(calendar);
+    }
 
+    public static void printFootballJourneys(List<FootballJourney> journeyList) {
+        journeyList.forEach(footballJourney -> {
+            System.out.println(footballJourney);
+            System.out.println("--------------------------");
+        });
     }
 
     /**
      * Método para ordenar los equipos en jornadas de liga y crear el calendario
-     * @param teams Lista de equipos que juegan la liga
+     * @param teamsList Lista de equipos que juegan la liga
      * @return Lista de jornadas de liga que forman el calendario
      */
-    private static List<List<FootballJournery>> generateCalendar(List<Team> teams) {
+    private static List<FootballJourney> generateCalendar(List<Team> teamsList) {
+        /*Estos son los equipos de la primera jornada. Desordenamos la lista para que sea
+        * más real y aleatorio el sorteo*/
+        List<Team> teamsUnordered = new ArrayList<>(teamsList);
+        Collections.shuffle(teamsUnordered); //shuffle desordena los valores del ArrayList
 
-        return null;
+        /*La lógica de esta ordenación es ir desplazando en uno la posición de los equipos en el array. Con
+        * esto conseguimos que se vaya cambiando y la jornada que juega en casa luego la siguiente juega fuera.
+        * Para esto utilizamos rotate donde pasamos el array y -1 para que desplace en 1 cada posición. Si le pasamo
+        * -2 pues desplaza dos posiciones y así sucesivamente. Podemos ver un ejemplo en:
+        * https://www.flipandroid.com/cmo-mover-el-primer-elemento-del-arraylist-a-la-ltima-posicin.html*/
+        List<Team> allTeams = new ArrayList<>();
+        for (int i = 0; i < (teamsList.size() / 2) ; i++) {
+            List<Team> teams = new ArrayList<>(teamsUnordered);
+            //Le vamos cambiando el valor con la i
+            Collections.rotate(teams, -(i + 1));
+            allTeams.addAll(teams);
+        }
+
+        //Ahora ya podemos crear las jornadas y añadirlas al calendario
+        //Lista para guardar las jornadas de futbol
+        List<FootballJourney> calendar = new ArrayList<>();
+
+        FootballJourney journey = null;
+        for (int i = 0; i < allTeams.size(); i++) {
+            //Si es par lo metemos como Local y si no pues como visitante
+            if (i % 2 == 0) {
+                journey = new FootballJourney();
+                journey.setTeam1(allTeams.get(i));
+            } else {
+                journey.setTeam2(allTeams.get(i));
+                calendar.add(journey);
+            }
+        }
+
+        //TODO si son impares hay que quitar uno que descansa cada jornada
+        //TODO tiene que ser compatible con cualquier número de equipos
+        //TODO hay que hacer la segunda vuelta. Le tenemos que dar la vuelta a todos los FootballJourney
+        return calendar;
+    }
+
+    public static List<Team> getTeams() {
+//        return List.of(new Team("Real Madrid"), new Team("FC Barcelona"), new Team("Real Betis"), new Team("Sevilla FC"),
+//                new Team("Atlético de Madrid"), new Team("Real Jaén"), new Team("Sabiote FC"));
+        return List.of(new Team("Real Madrid"), new Team("FC Barcelona"), new Team("Real Betis"),
+                new Team("Atlético de Madrid"), new Team("Real Jaén"), new Team("Sabiote FC"));
     }
 }
+
 
 
 /**
  * Clase para representar una jornada de liga. Esta compuesta por dos equipos que se enfrentan entre sí
  *
  */
-class FootballJournery {
+class FootballJourney {
     private Team team1;
     private Team team2;
 
-    public FootballJournery(Team team1, Team team2) {
+    public FootballJourney() {}
+
+    public FootballJourney(Team team1) {
+        this.team1 = team1;
+    }
+
+    public FootballJourney(Team team1, Team team2) {
         this.team1 = team1;
         this.team2 = team2;
     }
@@ -64,13 +125,18 @@ class FootballJournery {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        FootballJournery journery = (FootballJournery) obj;
+        FootballJourney journery = (FootballJourney) obj;
         return team1.equals(journery.team1) && team2.equals(journery.team2);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(team1, team2);
+    }
+
+    @Override
+    public String toString(){
+        return "Local: " + this.team1 + "\nVisitante: " + this.team2;
     }
 }
 
@@ -124,5 +190,10 @@ class Team {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString(){
+        return this.name;
     }
 }
