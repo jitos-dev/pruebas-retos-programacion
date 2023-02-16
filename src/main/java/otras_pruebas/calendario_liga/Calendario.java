@@ -11,6 +11,13 @@ package otras_pruebas.calendario_liga;
 * ejemplo de lo que se debería mostrar por pantalla en un ejemplo con 8 equipos.
 */
 
+/*
+* Desarrollar un programa que realice un calendario de fútbol con sus respectivas jornadas. Dos equipos no se podrán
+* enfrentar 2 veces entre ellos hasta haber completado la primera vuelta. Si el partido anterior se jugó en casa el
+* siguiente se deberá jugar fuera, y viceversa. El programa debe ser compatible con cualquier número de equipos. Se
+* valorará que también sea válido con un número de equipos impar, en ese caso un equipo descansaría cada jornada.
+*/
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
